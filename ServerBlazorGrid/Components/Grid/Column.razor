@@ -1,0 +1,51 @@
+﻿@typeparam TItem
+
+@using System.Linq.Expressions
+@using System.Reflection
+@using Microsoft.AspNetCore.Components.Rendering
+
+@{
+    Grid.AddColumn(this);
+}
+
+@if (Value is not null)
+{
+    <td>@GetValue()</td>
+}
+
+@code {
+
+    protected internal RenderFragment HeaderContent { get; protected set; }
+
+    public Column()
+    {
+        HeaderContent = RenderDefaultHeaderContent;
+    }
+
+    private void RenderDefaultHeaderContent(RenderTreeBuilder __builder)
+    {
+        <div class="col-title">
+            <div class="col-title-text">@Title</div>
+        </div>
+    }
+
+
+    [Parameter]
+    public Expression<Func<TItem, object>> Property { get; set; }
+
+    [Parameter]
+    public string Title { get; set; }
+
+    [CascadingParameter]
+    public TItem Value { get; set; }
+
+    [CascadingParameter]
+    public Grid<TItem> Grid { get; set; }
+
+    object GetValue()
+    {
+        var getValue = Property.Compile();
+        var propResult = getValue(Value);
+        return propResult;
+    }
+}

@@ -1,0 +1,23 @@
+﻿@page "/counter"
+
+<PageTitle>Counter</PageTitle>
+
+
+<Grid Data="People">
+    <Columns>
+        <Column Property="@(t => t.FirstName)" Title="First Name" />
+        <Column Property="@(t => t.LastName)" Title="Last Name" />
+        <Column Property="@(t => t.BirthDate)" Title="Birth Date" />
+    </Columns>
+</Grid>
+
+
+@code {
+    public IEnumerable<Person> People = new List<Person>
+    {
+        new Person{  BirthDate = new DateTime(1989,9,3) , LastName = "Parhizkar",FirstName = "Naser"},
+        new Person{  BirthDate = new DateTime(2017,2,22),LastName = "Parhizkar", FirstName = "Radin"},
+        new Person{ BirthDate = new DateTime(1992,9,3) , LastName = "Ter Stegen",  FirstName = "Marc-André"}
+    };
+}
+

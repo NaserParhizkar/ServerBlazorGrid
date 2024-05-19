@@ -1,0 +1,75 @@
+﻿@using Microsoft.AspNetCore.Components.Rendering
+@typeparam TItem
+
+
+<CascadingValue Value="this">
+    @{ StartCollectingColumns();}
+    @Columns(default)
+    <Defer>
+        @{ FinishCollectingColumns(); }
+        <table>
+            <thead>
+                <tr>
+                    @RenderColumnHeaders
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Data)
+                {
+                    <CascadingValue Value="item">
+                        <tr>
+                            @Columns(item)
+                        </tr>
+                    </CascadingValue>
+                }
+            </tbody>
+        </table>
+    </Defer>
+</CascadingValue>
+
+@code {
+    private bool _collectingColumns; // Columns might re-render themselves arbitrarily. We only want to capture them at a defined time.
+
+
+    [Parameter]
+    public IEnumerable<TItem> Data { get; set; }
+
+    [Parameter]
+    public RenderFragment<TItem> Columns { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+
+    private List<Column<TItem>> _columns;
+    List<Column<TItem>> ColumnCollection { get; set; } = new List<Column<TItem>>();
+
+    internal void AddColumn(Column<TItem> column)
+    {
+        if (_collectingColumns)
+        {
+            _columns.Add(column);
+        }
+    }
+
+    private void StartCollectingColumns()
+    {
+        _columns.Clear();
+        _collectingColumns = true;
+    }
+
+    private void FinishCollectingColumns()
+    {
+        _collectingColumns = false;
+    }
+
+    private RenderFragment RenderColumnHeaders => (__builder) => 
+    {
+        foreach (var col in _columns)
+        {
+            <th @key="@col" scope="col">
+                <div class="col-header-content">@col.HeaderContent</div>
+            </th>
+        }
+    };
+}
